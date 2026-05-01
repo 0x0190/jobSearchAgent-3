@@ -1,0 +1,9 @@
+.env
+jobListings-Archived/*
+!jobListings-Archived/.gitkeep
+jobListings-Raw/*
+!jobListings-Raw/.gitkeep
+jobMatches-Can/*
+!jobMatches-Can/.gitkeep
+jobMatches-US/*
+!jobMatches-US/.gitkeep
