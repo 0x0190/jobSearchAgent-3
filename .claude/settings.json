@@ -1,11 +1,14 @@
 {
-  "enableAllProjectMcpServers": true,
-  "enabledPlugins": {
-    "skill-creator@claude-plugins-official": true
-  },
   "permissions": {
     "allow": [
       "mcp__LinkedIn__get_job_details"
+    ],
+    "additionalDirectories": [
+      "/home/wasabi/Repository/jobSearchAgent-3/.claude/skills"
     ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledPlugins": {
+    "skill-creator@claude-plugins-official": true
   }
 }
