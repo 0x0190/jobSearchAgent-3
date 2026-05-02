@@ -43,8 +43,8 @@ Per `context/matchCriteria.md` target levels (Staff, Lead, Principal, Senior):
 
 ### 3. Industry / Domain Match (0–2 points)
 Per `context/matchCriteria.md`:
-- 2: Strongly preferred industry (aerospace, railway/transit, automotive FuSA, embedded safety-critical, fuel cell / hydrogen / energy systems / battery storage / clean energy)
-- 1: Acceptable industry (robotics, autonomous vehicles, space/satellite, industrial controls/SCADA, medical devices, defence/security)
+- 2: Strongly preferred industry (aerospace, railway/transit, automotive FuSA, autonomous vehicles, space/satellite, embedded safety-critical, hydrogen fuel cell, energy systems, battery storage, clean energy)
+- 1: Acceptable industry (robotics, industrial controls/SCADA, medical devices, defence/security)
 - 0: Deprioritized (general software, cloud, web, fintech, consumer electronics)
 
 ### 4. Salary (0–2 points)
