@@ -93,9 +93,9 @@ archived_reason:
 
 | Site | MCP Tool | Status |
 |---|---|---|
-| Dice | `mcp__claude_ai_Dice_Job_Search__search_jobs` | Configured |
-| Indeed | TBD | Add to settings.json |
-| LinkedIn | TBD | Add to settings.json |
+| Dice | `mcp__Dice__search_jobs` | Configured |
+| Indeed | TBD | Add to `.mcp.json` |
+| LinkedIn | `mcp__LinkedIn__search_jobs` | Configured — run `uvx linkedin-scraper-mcp@latest --login` on first use |
 
 ## Environment Variables (`.env`)
 
@@ -118,6 +118,6 @@ A listing is archived by `03-match-jobs` if:
 ## Adding a New Job Search Site
 
 1. Install or configure the MCP server for the new site.
-2. Add the MCP server entry to `.claude/settings.json`.
+2. Add the MCP server entry to `.mcp.json` — use `type: http` for hosted servers, `type: stdio` with `command`/`args` for local servers (like LinkedIn).
 3. Update the `01-fetch-jobs.md` skill to include a call to the new MCP tool.
 4. Update the MCP Servers table in this file.

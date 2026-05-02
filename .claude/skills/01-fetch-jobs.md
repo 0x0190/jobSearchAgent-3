@@ -9,7 +9,7 @@ Search all configured job sites for every search term in `context/searchTerms.md
 
 ## Steps
 
-1. Read `/home/wasabi/Repository/JobSearchAgent-3/context/searchTerms.md`. Collect every non-empty line as a search term.
+1. Read `/home/wasabi/Repository/jobSearchAgent-3/context/searchTerms.md`. Collect every non-empty line as a search term.
 
 2. Note today's date in `YYYY-MM-DD` format.
 
@@ -22,7 +22,7 @@ Search all configured job sites for every search term in `context/searchTerms.md
 
 ### Subagent prompt (fill in `{search_terms}` and `{today}` before passing)
 
-You are a job-listing fetcher working in `/home/wasabi/Repository/JobSearchAgent-3/`.
+You are a job-listing fetcher working in `/home/wasabi/Repository/jobSearchAgent-3/`.
 
 Today's date: `{today}`
 
@@ -35,7 +35,7 @@ Search terms to process (one per line):
 
 Before calling any MCP tools, use the `ToolSearch` tool to load their schemas:
 
-- Query: `"select:mcp__Dice__search_jobs"`
+- Query: `"select:mcp__Dice__search_jobs,mcp__LinkedIn__search_jobs"`
 
 This is required — calling MCP tools without first fetching their schema will fail with an `InputValidationError`.
 
@@ -47,7 +47,9 @@ For each search term, call every configured job search MCP tool:
   - Args: `keyword=<search term>`, `jobs_per_page=5`, `page_number=1`
   - Optionally add `posted_date="SEVEN"` if results look stale
 - **Indeed MCP** — skip if not available; note it in the final report
-- **LinkedIn MCP** — skip if not available; note it in the final report
+- **LinkedIn:** `mcp__LinkedIn__search_jobs`
+  - Args: `keywords=<search term>`, `limit=10`
+  - If a result has no `url` field, skip it
 
 If a call fails, log it and continue — do not abort.
 
@@ -77,11 +79,11 @@ Examples:
 
 #### E — Skip duplicates
 
-If a file with that name already exists in `/home/wasabi/Repository/JobSearchAgent-3/jobListings-Raw/`, skip it.
+If a file with that name already exists in `/home/wasabi/Repository/jobSearchAgent-3/jobListings-Raw/`, skip it.
 
 #### F — Write the file
 
-Save to `/home/wasabi/Repository/JobSearchAgent-3/jobListings-Raw/<filename>` with this exact structure:
+Save to `/home/wasabi/Repository/jobSearchAgent-3/jobListings-Raw/<filename>` with this exact structure:
 
 ```
 ---
