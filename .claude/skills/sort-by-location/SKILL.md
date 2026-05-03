@@ -1,27 +1,31 @@
 ---
 name: sort-by-location
-description: Copy matched job listings from jobListings-Raw/ into jobMatches-Can/ (country=CA) or jobMatches-US/ (country=US) based on the country field in each file's YAML frontmatter. Files are copied, not moved — jobListings-Raw/ remains the canonical record.
+description: Copy matched job listings from jobListings-Raw/ into jobMatches-Can/ (country=CA) or jobMatches-US/ (country=US) based on the country field in each file's YAML frontmatter. Files are copied, not moved — jobListings-Raw/ remains the canonical record. Run this after /match-jobs and before /notify-email.
 ---
 
 ## Goal
 
-Distribute matched listings (those with `match_score >= 6` still in `jobListings-Raw/`) into the appropriate country folder. Copy rather than move so `jobListings-Raw/` stays complete.
+Distribute matched listings into the appropriate country folder so the email notifier can find them. Only copy listings with `match_score >= 6` — anything lower should already be archived, but filter defensively. Copy rather than move so `jobListings-Raw/` stays complete and idempotent.
 
 ## Steps
 
-1. For each `.md` file in `jobListings-Raw/` that has a `match_score` value set (not empty):
+1. Ensure `jobMatches-Can/`, `jobMatches-US/`, and `jobListings-Archived/` exist (create if missing).
 
-   a. Parse the `country` field from YAML frontmatter.
+2. Move any existing `.md` files in `jobMatches-Can/` and `jobMatches-US/` to `jobListings-Archived/` with `archived_reason: stale-match` in their YAML frontmatter. This ensures the output reflects only the current run.
 
-   b. If `country: CA` → copy to `jobMatches-Can/`
+3. For each `.md` file in `jobListings-Raw/`:
 
-   c. If `country: US` → copy to `jobMatches-US/`
+   a. Parse `match_score` and `country` from YAML frontmatter.
 
-   d. If `country` is `other` or unrecognized → log a warning and skip (do not copy).
+   b. Skip if `match_score` is missing, empty, or less than 6.
 
-   e. If a file with the same name already exists in the destination folder, overwrite it (the Raw copy is always the freshest version).
+   c. If `country: CA` → copy to `jobMatches-Can/`
 
-2. Report:
-   - Files copied to `jobMatches-Can/`
-   - Files copied to `jobMatches-US/`
-   - Files skipped (unknown country)
+   d. If `country: US` → copy to `jobMatches-US/`
+
+   e. If `country` is `other` or unrecognized → log a warning and skip.
+
+4. Report:
+   - Files copied to `jobMatches-Can/` — list each filename and its match score
+   - Files copied to `jobMatches-US/` — list each filename and its match score
+   - Files skipped (low score or unknown country) — count only
