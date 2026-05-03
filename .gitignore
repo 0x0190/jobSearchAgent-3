@@ -1,5 +1,7 @@
 .env
 **/.DS_Store
+context/trello_cards.csv
+context/resume.md
 jobListings-Archived/*
 !jobListings-Archived/.gitkeep
 jobListings-Raw/*
