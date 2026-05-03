@@ -34,7 +34,7 @@ Run each skill in this exact order, waiting for each to complete before starting
 2. **`/archive-duplicates`** — Archive already-applied and duplicate listings
 3. **`/match-jobs`** — Score listings against resume and match criteria
 4. **`/sort-by-location`** — Copy matches to country-specific folders
-5. **`/notify-email`** — Send email summary to wasabi.buff@gmail.com
+5. **`/notify-email`** — Send email summary to NOTIFY_MAIL_DESTINATION
 
 **Progress line format** (print after each step completes):
 ```
@@ -106,5 +106,5 @@ Matched:
   Canada:           {matched_ca}
   United States:    {matched_us}
 
-Email sent to wasabi.buff@gmail.com.
+Email sent to NOTIFY_MAIL_DESTINATION.
 ```

@@ -26,7 +26,6 @@ searchTerms.md
                                                         └────────┬────────┘
                                                                  ▼
                                                          /notify-email
-                                                    (wasabi.buff@gmail.com)
 ```
 
 Run the full pipeline with: `/run-job-search`
