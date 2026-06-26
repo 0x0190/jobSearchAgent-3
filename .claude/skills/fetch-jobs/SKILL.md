@@ -44,11 +44,11 @@ This is required — calling MCP tools without first fetching their schema will 
 For each search term, call every configured job search MCP tool:
 
 - **Dice:** `mcp__Dice__search_jobs`
-  - Args: `keyword=<search term>`, `jobs_per_page=10`, `page_number=1`
+  - Args: `keyword=<search term>`, `jobs_per_page=15`, `page_number=1`
   - Optionally add `posted_date="SEVEN"` if results look stale
 - **Indeed MCP** — skip if not available; note it in the final report
 - **LinkedIn:** `mcp__LinkedIn__search_jobs`
-  - Args: `keywords=<search term>`, `limit=10`
+  - Args: `keywords=<search term>`, `limit=15`
   - If a result has no `url` field, skip it
 
 If a call fails, log it and continue — do not abort.
