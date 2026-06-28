@@ -1,0 +1,18 @@
+interface:
+  display_name: "Run Job Search"
+  short_description: "Run the complete job-search pipeline"
+  default_prompt: "Use $run-job-search to run the complete job-search pipeline."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "Dice"
+      description: "Search current Dice job listings"
+      transport: "streamable_http"
+      url: "https://mcp.dice.com/mcp"
+    - type: "mcp"
+      value: "LinkedIn"
+      description: "Search current LinkedIn job listings"
+      transport: "stdio"
+      command: "uvx"
+policy:
+  allow_implicit_invocation: false

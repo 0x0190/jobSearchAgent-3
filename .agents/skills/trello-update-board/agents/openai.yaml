@@ -1,0 +1,6 @@
+interface:
+  display_name: "Trello Board Update (Future)"
+  short_description: "Inspect planned Trello board updates"
+  default_prompt: "Use $trello-update-board to explain the planned Trello board update workflow."
+policy:
+  allow_implicit_invocation: false

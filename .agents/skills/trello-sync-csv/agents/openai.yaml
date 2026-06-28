@@ -1,0 +1,6 @@
+interface:
+  display_name: "Trello CSV Sync (Future)"
+  short_description: "Inspect the planned Trello CSV sync"
+  default_prompt: "Use $trello-sync-csv to explain the planned Trello CSV synchronization."
+policy:
+  allow_implicit_invocation: false

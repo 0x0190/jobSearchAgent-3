@@ -1,0 +1,4 @@
+interface:
+  display_name: "Archive Duplicates"
+  short_description: "Archive duplicate and applied listings"
+  default_prompt: "Use $archive-duplicates to deduplicate the current raw job listings."

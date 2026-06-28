@@ -1,0 +1,19 @@
+[mcp_servers.Dice]
+url = "https://mcp.dice.com/mcp"
+enabled = true
+required = false
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+default_tools_approval_mode = "auto"
+
+[mcp_servers.LinkedIn]
+command = "uvx"
+args = ["linkedin-scraper-mcp@latest"]
+enabled = true
+required = false
+startup_timeout_sec = 30
+tool_timeout_sec = 300
+default_tools_approval_mode = "auto"
+
+[mcp_servers.LinkedIn.env]
+UV_HTTP_TIMEOUT = "300"

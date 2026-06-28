@@ -1,0 +1,6 @@
+interface:
+  display_name: "Notify by Email"
+  short_description: "Send the current job-match summary"
+  default_prompt: "Use $notify-email to send the current job-match summary email."
+policy:
+  allow_implicit_invocation: false

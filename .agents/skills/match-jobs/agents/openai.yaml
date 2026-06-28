@@ -1,0 +1,4 @@
+interface:
+  display_name: "Match Jobs"
+  short_description: "Score and filter raw job listings"
+  default_prompt: "Use $match-jobs to score raw listings against my resume and criteria."

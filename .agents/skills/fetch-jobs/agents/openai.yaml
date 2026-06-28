@@ -1,0 +1,16 @@
+interface:
+  display_name: "Fetch Jobs"
+  short_description: "Fetch and ingest current job listings"
+  default_prompt: "Use $fetch-jobs to search configured job sources and ingest new listings."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "Dice"
+      description: "Search current Dice job listings"
+      transport: "streamable_http"
+      url: "https://mcp.dice.com/mcp"
+    - type: "mcp"
+      value: "LinkedIn"
+      description: "Search current LinkedIn job listings"
+      transport: "stdio"
+      command: "uvx"

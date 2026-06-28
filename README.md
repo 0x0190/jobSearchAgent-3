@@ -1,147 +1,147 @@
 # JobSearchAgent
 
-This is my first attempt to create an AI job search workflow - to reclaim my sanity from mindless scrolling of job postings 😅. It is built using [Claude Code](https://claude.ai/code). It fetches listings from Dice and LinkedIn, filters and scores them against a resume and match criteria, and sends a summary email — all triggered by a single slash command.
+A Codex-native workflow for fetching job listings, removing duplicates, scoring roles against a private resume, organizing Canadian and US matches, and sending an optional AgentMail summary.
 
-## How it works
+The semantic steps run as repository skills. A tested Python CLI handles deterministic operations such as YAML serialization, deduplication, file moves, output rebuilding, and email rendering.
 
-```
-searchTerms.md
-     │
-     ▼
-/fetch-jobs ──────────────────────────► jobListings-Raw/
-                                               │
-                                               ▼
-                                   /archive-duplicates ──► jobListings-Archived/
-                                         (trello_cards.csv)
+## Pipeline
+
+```text
+context/searchTerms.md
+        │
+        ▼
+   $fetch-jobs ───────────────────────────► jobListings-Raw/
                                                    │
                                                    ▼
-                                           /match-jobs ──► jobListings-Archived/
-                                            (resume.md)      (low-match, clearance,
-                                        (matchCriteria.md)    no sponsorship)
+                                      $archive-duplicates ──► jobListings-Archived/
                                                    │
                                                    ▼
-                                       /sort-by-location
-                                        ┌────────┴────────┐
-                                        ▼                 ▼
-                               jobMatches-Can/    jobMatches-US/
-                                        └────────┬────────┘
-                                                 ▼
-                                         /notify-email
+                                            $match-jobs ─────► jobListings-Archived/
+                                                   │
+                                                   ▼
+                                         $sort-by-location
+                                           ┌───────┴───────┐
+                                           ▼               ▼
+                                  jobMatches-Can/  jobMatches-US/
+                                           └───────┬───────┘
+                                                   ▼
+                                             $notify-email
 ```
 
-Run the full pipeline with `/run-job-search`.
+Invoke `$run-job-search` to run the complete sequence.
 
 ## Prerequisites
 
-- [Claude Code](https://claude.ai/code) CLI
-- [uv](https://github.com/astral-sh/uv) (for running LinkedIn [MCP server](https://github.com/stickerdaniel/linkedin-mcp-server).)
-- An [agentmail](https://agentmail.to) account (for email notifications)
+- Codex CLI, IDE extension, or app with repository skill support
+- Python 3.11 or newer
+- [uv](https://docs.astral.sh/uv/)
+- An [AgentMail](https://agentmail.to) account for email notifications
+- A one-time LinkedIn MCP login
+
+Project-scoped MCP configuration is loaded from `.codex/config.toml` only after the repository is trusted in Codex. The configured sources are Dice and LinkedIn; Indeed is not configured.
 
 ## Setup
-
-**1. Clone the repo**
 
 ```bash
 git clone <repo-url>
 cd jobSearchAgent-3
-```
+uv sync --dev
 
-**2. Configure environment variables**
-
-```bash
 cp .env.example .env
-```
+cp context/resume.example.md context/resume.md
+cp context/trello_cards.example.csv context/trello_cards.csv
 
-Edit `.env` and fill in:
-
-| Variable | Purpose |
-|---|---|
-| `AGENTMAIL_API_KEY` | agentmail API key |
-| `AGENTMAIL_INBOX_ID` | agentmail inbox ID for the sending address |
-
-The Dice MCP server requires no credentials. LinkedIn credentials are stored locally after a one-time login (see step 3).
-
-**3. Log in to LinkedIn**
-
-```bash
 uvx linkedin-scraper-mcp@latest --login
 ```
 
-Credentials are stored in `~/.linkedin-mcp/` and reused on subsequent runs.
+Then:
 
-**4. Customize your search**
+1. Mark the repository as trusted in Codex so its MCP servers can load.
+2. Fill in `context/resume.md` with the candidate profile.
+3. Add prior applications to `context/trello_cards.csv` using `Date,Company,Position` columns.
+4. Adjust `context/searchTerms.md` and `context/matchCriteria.md`.
+5. Fill in `.env`:
 
-- [context/searchTerms.md](context/searchTerms.md) — one search query per line
-- [context/resume.md](context/resume.md) — your resume/profile used for match scoring
-- [context/matchCriteria.md](context/matchCriteria.md) — salary floor, target seniority, preferred industries, work authorization rules
-
-## Usage
-
-Open the project in Claude Code and run:
-
-```
-/run-job-search
-```
-
-Or run individual pipeline steps:
-
-| Command | What it does |
+| Variable | Purpose |
 |---|---|
-| `/fetch-jobs` | Fetch raw listings from Dice and LinkedIn |
-| `/archive-duplicates` | Archive already-applied jobs (from `trello_cards.csv`) and within-run duplicates |
-| `/match-jobs` | Score listings 0–10; archive anything below 6, no-sponsorship US jobs, and US clearance jobs |
-| `/sort-by-location` | Copy matched listings to `jobMatches-Can/` or `jobMatches-US/` |
-| `/notify-email` | Send a summary email with all matched jobs |
+| `AGENTMAIL_API_KEY` | Bearer token for AgentMail |
+| `AGENTMAIL_INBOX_ID` | Inbox used to send the summary |
+| `NOTIFY_MAIL_DESTINATION` | Recipient email address |
 
-## Folder structure
+Candidate inputs, credentials, fetched listings, and generated matches are ignored by Git.
 
-```
-.claude/
-  settings.json          # MCP server configs and tool permissions
-  skills/                # Skill definitions for each pipeline step
-context/
-  resume.md              # Candidate profile
-  searchTerms.md         # Search queries
-  matchCriteria.md       # Scoring rules and hard filters
-  trello_cards.csv       # Applied jobs (Date, Company, Position)
-jobListings-Raw/         # All fetched listings — canonical record
-jobListings-Archived/    # Filtered out: duplicates, low-match, ineligible
-jobMatches-Can/          # Matched Canadian jobs
-jobMatches-US/           # Matched US jobs requiring sponsorship
+Verify setup without modifying listings:
+
+```bash
+uv run job-search-agent preflight
 ```
 
-## Job listing file format
+## Codex skills
 
-Each listing is a markdown file with YAML frontmatter:
+Type `$` in Codex to select a repository skill.
 
+| Skill | Behavior |
+|---|---|
+| `$run-job-search` | Run fetch, deduplicate, match, sort, and notify in order |
+| `$fetch-jobs` | Search Dice and LinkedIn and ingest normalized listings |
+| `$archive-duplicates` | Archive applied jobs and duplicate listings |
+| `$match-jobs` | Apply hard eligibility rules and score remaining jobs from 0–10 |
+| `$sort-by-location` | Rebuild Canadian and US match folders from scores of 6+ |
+| `$notify-email` | Send the current match summary through AgentMail |
+
+The full-pipeline and email skills require explicit invocation because they send external email. The two Trello skills are explicit-only placeholders and make no changes.
+
+## Deterministic CLI
+
+Skills call the same utility that can be audited independently:
+
+```bash
+uv run job-search-agent --help
+uv run job-search-agent archive-duplicates --dry-run
+uv run job-search-agent sort-matches --dry-run
+uv run job-search-agent notify --dry-run
 ```
-{YYYY-MM-DD}-{site}-{company-slug}-{title-slug}.md
-```
+
+Every command accepts `--json` for machine-readable orchestration. Mutating listing operations use atomic writes, and archive name collisions preserve both files.
+
+### Ingest schema
+
+`ingest --input` accepts one JSON object or an array. Required fields are `site`, `company`, `title`, `location`, `country`, and `url`; `date_fetched` defaults to today. The CLI writes this Markdown contract:
 
 ```yaml
 ---
-date_fetched: 2026-04-30
-site: dice               # dice | indeed | linkedin
+date_fetched: 2026-06-28
+site: dice
 company: Acme Corp
 title: Senior Embedded Software Engineer
 location: Toronto, ON, Canada
-location_type: hybrid    # remote | hybrid | on-site | unknown
-country: CA              # CA | US | other
-url: https://...
-salary: "$130,000–$150,000"
+location_type: hybrid
+country: CA
+url: https://example.com/job
+salary: $150,000–$170,000
 sponsorship: not required
 security_clearance: none
 match_score: 8
-match_rationale: "Strong embedded C/C++ and EN 50128 overlap, senior title, railway domain."
+match_rationale: Strong embedded C++ and safety-critical domain overlap.
 archived_reason:
 ---
-
-# Job Description
-...
 ```
 
-## Adding a new job source
+`jobListings-Raw/` is canonical. The country match folders contain generated copies and are rebuilt by `sort-matches`.
 
-1. Install or configure an MCP server for the new site.
-2. Add it to [.mcp.json](.mcp.json).
-3. Update the `/fetch-jobs` skill at [.claude/skills/fetch-jobs/](.claude/skills/fetch-jobs/) to call the new MCP tool.
+## Development and validation
+
+```bash
+uv run pytest
+python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py .agents/skills/fetch-jobs
+```
+
+Tests use temporary repositories, dry-run notification, and a mocked AgentMail endpoint. They never call live MCP servers or send live email.
+
+## Troubleshooting
+
+- **Skills are missing:** Start a fresh Codex session from the repository root. Codex discovers repository skills from `.agents/skills/`.
+- **MCP servers are missing:** Confirm the repository is trusted, inspect `codex mcp list`, and restart the session after configuration changes.
+- **LinkedIn fails to start:** Repeat `uvx linkedin-scraper-mcp@latest --login` and confirm `uvx` is on `PATH`.
+- **Preflight fails:** Create the private context files from their examples and populate all three AgentMail variables.
+- **Email preview is needed:** Run `uv run job-search-agent notify --dry-run`; this never performs an HTTP request.

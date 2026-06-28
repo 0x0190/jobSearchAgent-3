@@ -1,5 +1,12 @@
 .env
+.venv/
+.pytest_cache/
+__pycache__/
+*.py[cod]
+.codex-log/
 **/.DS_Store
+context/resume.md
+context/trello_cards.csv
 jobListings-Archived/*
 !jobListings-Archived/.gitkeep
 jobListings-Raw/*

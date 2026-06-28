@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sort by Location"
+  short_description: "Rebuild Canadian and US match folders"
+  default_prompt: "Use $sort-by-location to rebuild the country-specific match folders."
